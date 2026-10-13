@@ -1,5 +1,7 @@
 # LeadFlow
 
+[![CI](https://github.com/Shaurya55555/leadflow-pravarai/actions/workflows/ci.yml/badge.svg)](https://github.com/Shaurya55555/leadflow-pravarai/actions/workflows/ci.yml)
+
 A single-screen lead management tool: track leads, log every discussion, and set follow-up reminders.
 
 Built for the PravarAI full-stack intern assessment.
