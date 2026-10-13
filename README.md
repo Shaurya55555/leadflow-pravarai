@@ -38,7 +38,10 @@ Built for the PravarAI full-stack intern assessment.
 **Extras**
 
 - Layout and wording follow the supplied wireframes
-- Unsaved-note protection: closing a dialog with typed input asks before discarding
+- Unsaved-input protection: closing a dialog with a typed note or unsaved edits asks before discarding
+- Quick-set follow-up chips (Tomorrow, In 3 days, Next week, all at 10:00 local time)
+- Suggested follow-up: a deterministic, rule-based suggestion (no AI service involved) from the lead's status and the note text, for example "call on Friday" suggests the next Friday. It only fills the form when you click "Use suggestion" and never saves anything on its own
+- Edit lead details (name, company, phone) from the timeline dialog
 - "Lead created" appears in the timeline as a system event and is never stored as a discussion
 - Won and Lost leads are dimmed and never flagged as overdue
 
@@ -81,14 +84,14 @@ Frontend on http://localhost:3000, API on http://localhost:8000. The backend see
 
 ```bash
 cd backend && pytest -q          # 32 API tests
-cd frontend && npm test          # 36 UI and time-logic tests
+cd frontend && npm test          # 57 UI and logic tests
 ```
 
 What is covered:
 
 - **API:** status codes and error shapes, validation limits, partial updates, search wildcards, combined filters, ordering with identical timestamps, CORS, seed idempotency.
 - **Time logic:** today and overdue across local midnight and the UTC/local date boundary (the suite pins the timezone to Asia/Kolkata), closed leads never flagged, pin ordering.
-- **UI:** saving a note with and without a follow-up, validation, failed saves keeping the typed note, double-submit prevention, status changes, the unsaved-note guard.
+- **UI:** saving a note with and without a follow-up, validation, failed saves keeping the typed note, double-submit prevention, status changes, the unsaved-input guard, snooze presets, the rule-based suggestion, editing lead details.
 
 ## Environment variables
 
@@ -149,5 +152,4 @@ This project was built with Claude Code (Anthropic) as a pair-programming assist
 
 - No authentication or multi-user support; the data model is single-tenant.
 - No pagination on the lead list; fine for one rep's pipeline, and the first thing to add at scale.
-- Lead details (name, company, phone) are editable through the API but not yet in the UI.
 - SQLite is used for zero-setup; the `DATABASE_URL` setting makes moving to Postgres a configuration change plus a migration tool such as Alembic.
