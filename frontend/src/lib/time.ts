@@ -90,3 +90,29 @@ export function toDateInputValue(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+
+/** A calendar-day offset in local time (safe across month ends and DST changes). */
+export function addDays(d: Date, days: number): Date {
+  const out = new Date(d);
+  out.setDate(out.getDate() + days);
+  return out;
+}
+
+export interface SnoozeOption {
+  label: string;
+  date: string;
+  time: string;
+}
+
+/** One-click follow-up presets, all at 10:00 local time. */
+export function snoozeOptions(now: Date): SnoozeOption[] {
+  return [
+    { label: "Tomorrow", days: 1 },
+    { label: "In 3 days", days: 3 },
+    { label: "Next week", days: 7 },
+  ].map(({ label, days }) => ({
+    label,
+    date: toDateInputValue(addDays(now, days)),
+    time: "10:00",
+  }));
+}

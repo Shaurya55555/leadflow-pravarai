@@ -165,7 +165,7 @@ describe("closing with unsaved input", () => {
     const { user, onClose } = await setup();
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText("Discard your unsaved note?")).toBeNull();
+    expect(screen.queryByText("Discard your unsaved changes?")).toBeNull();
   });
 
   it("asks before discarding a typed note, and can keep editing", async () => {
@@ -173,11 +173,11 @@ describe("closing with unsaved input", () => {
     await user.type(screen.getByPlaceholderText(NOTE_PLACEHOLDER), "Half written");
     await user.click(screen.getByRole("button", { name: "Close" }));
 
-    await screen.findByText("Discard your unsaved note?");
+    await screen.findByText("Discard your unsaved changes?");
     expect(onClose).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole("button", { name: "Keep editing" }));
-    expect(screen.queryByText("Discard your unsaved note?")).toBeNull();
+    expect(screen.queryByText("Discard your unsaved changes?")).toBeNull();
     expect((screen.getByPlaceholderText(NOTE_PLACEHOLDER) as HTMLTextAreaElement).value).toBe(
       "Half written",
     );

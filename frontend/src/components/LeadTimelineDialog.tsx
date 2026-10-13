@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { suggestFollowUp } from "@/lib/suggest";
 import {
   formatShort,
   isOverdue,
   localDateTimeToISO,
+  snoozeOptions,
   timeAgo,
   toDateInputValue,
 } from "@/lib/time";
 import { STATUSES, type Discussion, type Lead, type LeadStatus } from "@/lib/types";
 import { useNow } from "@/lib/useNow";
+import { EditLeadPanel } from "./EditLeadPanel";
 import { Modal } from "./Modal";
 
 interface Props {
@@ -38,6 +41,9 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
 
   const [statusError, setStatusError] = useState<string | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
+
+  const [editing, setEditing] = useState(false);
+  const [editDirty, setEditDirty] = useState(false);
 
   const now = useNow();
   const leadId = lead.id;
@@ -69,6 +75,14 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
       setDate(toDateInputValue(tomorrow));
       setTime("10:00");
     }
+  }
+
+  /** Fill the follow-up fields from a preset or suggestion. Never saves anything by itself. */
+  function applyFollowUp(nextDate: string, nextTime: string) {
+    setSetFollowUp(true);
+    setDate(nextDate);
+    setTime(nextTime);
+    setFormError(null);
   }
 
   async function changeStatus(next: LeadStatus) {
@@ -132,14 +146,16 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
 
   const overdue = isOverdue(lead, now);
   const closed = lead.status === "Won" || lead.status === "Lost";
+  const suggestion = closed ? null : suggestFollowUp(lead.status, note, now);
+  const suggestionISO = suggestion ? localDateTimeToISO(suggestion.date, suggestion.time) : null;
 
   return (
     <Modal
       label={`Lead ${lead.name}`}
       onClose={onClose}
       wide
-      isDirty={note.trim() !== ""}
-      dirtyMessage="Discard your unsaved note?"
+      isDirty={note.trim() !== "" || editDirty}
+      dirtyMessage="Discard your unsaved changes?"
       title={
         <>
           {lead.name}
@@ -151,6 +167,15 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
       subtitle={
         <>
           {lead.phone ? `📞 ${lead.phone}` : <span className="italic">No phone</span>}
+          {!editing && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="ml-3 text-xs font-medium text-blue-600 underline hover:text-blue-800"
+            >
+              Edit details
+            </button>
+          )}
         </>
       }
       actions={
@@ -172,6 +197,18 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
         </>
       }
     >
+      {editing && (
+        <EditLeadPanel
+          lead={lead}
+          onDirtyChange={setEditDirty}
+          onCancel={() => setEditing(false)}
+          onSaved={(updated) => {
+            onLeadChange(updated);
+            setEditing(false);
+          }}
+        />
+      )}
+
       {(lead.follow_up_at && !closed) || statusError ? (
         <div className="space-y-1 border-b border-slate-200 bg-white px-5 py-2 text-sm">
           {lead.follow_up_at && !closed && (
@@ -304,6 +341,34 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
             {saving ? "Saving..." : "Save Note"}
           </button>
         </div>
+        <div className="flex flex-wrap items-center gap-2" aria-label="Follow-up shortcuts">
+          <span className="text-xs text-slate-500">Quick set:</span>
+          {snoozeOptions(now).map((o) => (
+            <button
+              key={o.label}
+              type="button"
+              onClick={() => applyFollowUp(o.date, o.time)}
+              className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+        {suggestion && suggestionISO && (
+          <p className="text-xs text-slate-600">
+            <span aria-hidden="true">💡 </span>
+            <span className="font-medium">Suggested follow-up:</span>{" "}
+            {formatShort(suggestionISO, now)}{" "}
+            <span className="text-slate-400">({suggestion.reason})</span>{" "}
+            <button
+              type="button"
+              onClick={() => applyFollowUp(suggestion.date, suggestion.time)}
+              className="font-medium text-blue-600 underline hover:text-blue-800"
+            >
+              Use suggestion
+            </button>
+          </p>
+        )}
         {formError && (
           <p role="alert" className="text-sm text-rose-600">
             {formError}
