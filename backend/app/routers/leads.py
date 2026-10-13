@@ -91,9 +91,9 @@ def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db)
     lead = _get_lead_or_404(db, lead_id)
     changes = payload.model_dump(exclude_unset=True)
     if "name" in changes and changes["name"] is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "name cannot be empty")
+        raise HTTPException(422, "name cannot be empty")
     if "status" in changes and changes["status"] is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "status cannot be null")
+        raise HTTPException(422, "status cannot be null")
     for key, value in changes.items():
         setattr(lead, key, value)
     db.commit()
