@@ -45,7 +45,13 @@ export function AddLeadDialog({ onClose, onCreated }: Props) {
   }
 
   return (
-    <Modal label="Add new lead" title="Add New Lead" onClose={onClose}>
+    <Modal
+      label="Add new lead"
+      title="Add New Lead"
+      onClose={onClose}
+      isDirty={!saving && (name.trim() !== "" || company.trim() !== "" || phone.trim() !== "")}
+      dirtyMessage="Discard this new lead?"
+    >
       <form onSubmit={submit} noValidate>
         <div className="space-y-4 px-5 py-5">
           <label className="block">

@@ -34,6 +34,7 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
   const [time, setTime] = useState("");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   const [statusError, setStatusError] = useState<string | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
@@ -120,6 +121,7 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
       setSetFollowUp(false);
       setDate("");
       setTime("");
+      setSaved(true);
     } catch (err) {
       // Keep the typed note so nothing is lost.
       setFormError(err instanceof Error ? err.message : "Could not save the discussion.");
@@ -136,6 +138,8 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
       label={`Lead ${lead.name}`}
       onClose={onClose}
       wide
+      isDirty={note.trim() !== ""}
+      dirtyMessage="Discard your unsaved note?"
       title={
         <>
           {lead.name}
@@ -256,7 +260,10 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
           <span className="sr-only">New discussion</span>
           <textarea
             value={note}
-            onChange={(e) => setNote(e.target.value)}
+            onChange={(e) => {
+              setNote(e.target.value);
+              setSaved(false);
+            }}
             rows={3}
             maxLength={5000}
             placeholder="Log a new discussion..."
@@ -300,6 +307,11 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
         {formError && (
           <p role="alert" className="text-sm text-rose-600">
             {formError}
+          </p>
+        )}
+        {saved && (
+          <p role="status" className="text-sm text-green-700">
+            Note saved.
           </p>
         )}
       </form>
