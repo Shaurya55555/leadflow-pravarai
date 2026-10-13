@@ -4,7 +4,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   test: {
-    environment: "jsdom",
+    // happy-dom starts much faster than jsdom, which matters on cold or low-memory machines.
+    environment: "happy-dom",
     include: ["tests/**/*.test.{ts,tsx}"],
     setupFiles: ["./tests/setup.ts"],
     // Pins the timezone so "today" / midnight assertions are deterministic.

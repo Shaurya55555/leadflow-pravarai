@@ -3,7 +3,7 @@ import { afterEach } from "vitest";
 
 afterEach(() => cleanup());
 
-// jsdom does not implement the modal <dialog> API.
+// The DOM emulation does not implement the modal <dialog> behaviour we rely on (open state + close event).
 HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
   this.setAttribute("open", "");
 };
