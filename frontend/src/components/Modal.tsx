@@ -57,12 +57,12 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) requestClose();
       }}
-      className={`m-auto max-h-[90vh] w-[calc(100%-2rem)] ${wide ? "max-w-xl" : "max-w-md"} overflow-hidden rounded-xl bg-white p-0 shadow-2xl backdrop:bg-slate-900/50`}
+      className={`m-auto max-h-[92dvh] w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] ${wide ? "max-w-xl" : "max-w-md"} overflow-hidden rounded-xl bg-white p-0 shadow-2xl backdrop:bg-slate-900/50`}
     >
-      <div className="flex max-h-[90vh] flex-col">
+      <div className="flex max-h-[92dvh] flex-col">
         <header className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
           <div className="min-w-0">
-            <h2 className="truncate text-lg font-semibold text-slate-900">{title}</h2>
+            <h2 className="break-words text-lg font-semibold leading-snug text-slate-900">{title}</h2>
             {subtitle && <div className="mt-0.5 text-sm text-slate-500">{subtitle}</div>}
           </div>
           <div className="flex shrink-0 items-center gap-2">

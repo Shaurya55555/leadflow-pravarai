@@ -160,13 +160,19 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
         <>
           {lead.name}
           {lead.company && (
-            <span className="ml-1.5 font-normal text-slate-500">({lead.company})</span>
+            <span className="block text-base font-normal text-slate-500 sm:ml-1.5 sm:inline sm:text-lg">
+              ({lead.company})
+            </span>
           )}
         </>
       }
       subtitle={
         <>
-          {lead.phone ? `📞 ${lead.phone}` : <span className="italic">No phone</span>}
+          {lead.phone ? (
+            <span className="whitespace-nowrap">📞 {lead.phone}</span>
+          ) : (
+            <span className="italic">No phone</span>
+          )}
           {!editing && (
             <button
               type="button"
@@ -301,7 +307,7 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
               setNote(e.target.value);
               setSaved(false);
             }}
-            rows={3}
+            rows={2}
             maxLength={5000}
             placeholder="Log a new discussion..."
             className="w-full resize-none rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
@@ -342,7 +348,7 @@ export function LeadTimelineDialog({ lead, onClose, onLeadChange }: Props) {
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-2" aria-label="Follow-up shortcuts">
-          <span className="text-xs text-slate-500">Quick set:</span>
+          <span className="hidden text-xs text-slate-500 sm:inline">Quick set:</span>
           {snoozeOptions(now).map((o) => (
             <button
               key={o.label}
