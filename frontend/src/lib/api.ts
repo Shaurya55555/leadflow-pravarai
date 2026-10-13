@@ -58,7 +58,16 @@ export const api = {
   createLead(input: NewLeadInput) {
     return request<Lead>("/leads", { method: "POST", body: JSON.stringify(input) });
   },
-  updateLead(id: number, patch: { status?: LeadStatus; follow_up_at?: string | null }) {
+  updateLead(
+    id: number,
+    patch: {
+      status?: LeadStatus;
+      follow_up_at?: string | null;
+      name?: string;
+      company?: string;
+      phone?: string;
+    },
+  ) {
     return request<Lead>(`/leads/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
   },
   listDiscussions(id: number) {
