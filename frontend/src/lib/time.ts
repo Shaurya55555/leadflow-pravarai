@@ -61,9 +61,32 @@ export function pinTodaysFollowUps(leads: Lead[], now: Date = new Date()) {
   return { today, rest };
 }
 
-/** Value of an <input type="datetime-local"> (local time) -> ISO string (UTC). */
-export function localInputToISO(value: string): string | null {
-  if (!value) return null;
-  const d = new Date(value);
+/** "2:00 PM" in the viewer's locale. */
+export function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+/** "May 4, 10:30 AM"; the year is added only when it is not the current year. */
+export function formatShort(iso: string, now: Date = new Date()): string {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}),
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/** Local <input type="date"> + <input type="time"> values -> ISO string (UTC), or null if incomplete. */
+export function localDateTimeToISO(date: string, time: string): string | null {
+  if (!date || !time) return null;
+  const d = new Date(`${date}T${time}`);
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+/** Local "yyyy-mm-dd" for an <input type="date">. */
+export function toDateInputValue(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

@@ -77,33 +77,31 @@ export function LeadFlowApp() {
   const filtering = statusFilter !== null || debouncedSearch.trim() !== "";
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
-      <header className="mb-6 flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">LeadFlow</h1>
-          <p className="text-sm text-slate-500">
-            Track leads, log conversations, never miss a follow-up.
-          </p>
+    <>
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-blue-600">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M2 14l5-5 3 3 7-7M12 5h5v5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            LeadFlow
+          </h1>
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="shrink-0 rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            + Add New Lead
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
-        >
-          + Add lead
-        </button>
       </header>
 
-      <div className="mb-4 space-y-3">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search leads by name"
-          aria-label="Search leads by name"
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-        />
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
+    <main className="mx-auto w-full max-w-3xl px-4 py-6">
+      <div className="mb-6 space-y-3">
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by status">
+          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Filters:
+          </span>
           {([null, ...STATUSES] as (LeadStatus | null)[]).map((s) => {
             const active = s === statusFilter;
             return (
@@ -112,10 +110,10 @@ export function LeadFlowApp() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setStatusFilter(s)}
-                className={`rounded-full px-3 py-1 text-sm font-medium ring-1 ring-inset transition ${
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                   active
-                    ? "bg-indigo-600 text-white ring-indigo-600"
-                    : "bg-white text-slate-700 ring-slate-300 hover:bg-slate-50"
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 {s ?? "All"}
@@ -123,6 +121,14 @@ export function LeadFlowApp() {
             );
           })}
         </div>
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search leads by name"
+          aria-label="Search leads by name"
+          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+        />
       </div>
 
       {error ? (
@@ -150,12 +156,9 @@ export function LeadFlowApp() {
             <section aria-labelledby="today-heading">
               <h2
                 id="today-heading"
-                className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-700"
+                className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
               >
-                Today&apos;s follow-ups
-                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-indigo-700">
-                  {today.length}
-                </span>
+                <span aria-hidden="true">📌 </span>Today&apos;s Follow-ups
               </h2>
               <ul className="space-y-2">
                 {today.map((l) => (
@@ -166,14 +169,12 @@ export function LeadFlowApp() {
           )}
           {rest.length > 0 && (
             <section aria-labelledby="all-heading">
-              {today.length > 0 && (
-                <h2
-                  id="all-heading"
-                  className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
-                >
-                  All leads
-                </h2>
-              )}
+              <h2
+                id="all-heading"
+                className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+              >
+                All Leads
+              </h2>
               <ul className="space-y-2">
                 {rest.map((l) => (
                   <LeadRow key={l.id} lead={l} now={now} onOpen={(x) => setSelectedId(x.id)} />
@@ -194,5 +195,6 @@ export function LeadFlowApp() {
       )}
       {adding && <AddLeadDialog onClose={() => setAdding(false)} onCreated={upsertLead} />}
     </main>
+    </>
   );
 }
