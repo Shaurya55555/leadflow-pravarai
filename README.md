@@ -33,6 +33,7 @@ Built for the PravarAI full-stack intern assessment.
 - Search by name (composes with the status filter)
 - Overdue follow-ups highlighted in red
 - Docker Compose setup
+- Login (optional in the brief): JWT sign-in, protected API, session restored on reload, log out. Demo account `demo@leadflow.test` / `leadflow123`
 - Seed script: 7 leads covering all six statuses, with discussions, an overdue, a due-today and an upcoming follow-up
 
 **Extras**
@@ -83,8 +84,8 @@ Frontend on http://localhost:3000, API on http://localhost:8000. The backend see
 ## Tests
 
 ```bash
-cd backend && pytest -q          # 32 API tests
-cd frontend && npm test          # 57 UI and logic tests
+cd backend && pytest -q          # 52 API tests
+cd frontend && npm test          # 65 UI and logic tests
 ```
 
 What is covered:
@@ -101,12 +102,17 @@ All of them are listed in the root [`.env.example`](.env.example) (and per servi
 | --- | --- | --- | --- |
 | `DATABASE_URL` | backend | `sqlite:///./leadflow.db` | SQLAlchemy connection string |
 | `CORS_ORIGINS` | backend | `http://localhost:3000` | Comma-separated allowed origins |
+| `SECRET_KEY` | backend | dev-only value | Signs login tokens; set a long random value outside local development |
+| `ACCESS_TOKEN_MINUTES` | backend | `720` | Login lifetime |
+| `DEMO_EMAIL`, `DEMO_PASSWORD` | backend | `demo@leadflow.test`, `leadflow123` | Demo account created on first start when there are no users |
 | `NEXT_PUBLIC_API_URL` | frontend | `http://localhost:8000` | API base URL (inlined at build time) |
 
 ## API
 
 | Method | Path | Notes |
 | --- | --- | --- |
+| POST | `/auth/login` | `{email, password}` returns `{access_token, user}`; 401 with one message for any bad credential |
+| GET | `/auth/me` | Current user; needs `Authorization: Bearer <token>` |
 | GET | `/leads?status=&q=` | Includes `last_note` and `last_discussion_at`; most recently touched first |
 | POST | `/leads` | 201; `name` required |
 | GET | `/leads/{id}` | 404 if missing |
@@ -114,7 +120,9 @@ All of them are listed in the root [`.env.example`](.env.example) (and per servi
 | DELETE | `/leads/{id}` | 204; cascades to discussions |
 | GET | `/leads/{id}/discussions` | Newest first |
 | POST | `/leads/{id}/discussions` | 201; `{note, follow_up_at?}`; returns `{discussion, lead}` |
-| GET | `/health` | Liveness check |
+| GET | `/health` | Liveness check (public) |
+
+Every `/leads` route requires a bearer token and returns 401 without one.
 
 Validation failures return 422 with FastAPI's field-level `detail`; unknown ids return 404 with a readable message. The frontend shows the server message inline.
 
@@ -126,7 +134,7 @@ Validation failures return 422 with FastAPI's field-level `detail`; unknown ids 
 - **No optimistic updates.** The UI changes only after the server confirms, so a failed save is never hidden.
 - **One grouped query for last notes.** The list endpoint avoids an N+1 by fetching the latest discussion per lead in a single query.
 - **Closed leads are quiet.** Won and Lost leads never show overdue or pinned states, because a stale reminder on a closed deal is noise.
-- **Auth skipped.** The brief marks login optional.
+- **Simple, honest auth.** Passwords are hashed with salted PBKDF2, sessions are short-lived signed JWTs, and a bad email and a bad password return the same message. The token lives in `localStorage`, which is fine for this scope; an httpOnly cookie would be the next step. There is no sign-up screen, so the demo account is created on first start.
 
 ## Project structure
 
@@ -150,6 +158,6 @@ This project was built with Claude Code (Anthropic) as a pair-programming assist
 
 ## Known limitations and next steps
 
-- No authentication or multi-user support; the data model is single-tenant.
+- Login exists, but there is no sign-up, password reset or per-user data: all signed-in users share one pipeline.
 - No pagination on the lead list; fine for one rep's pipeline, and the first thing to add at scale.
 - SQLite is used for zero-setup; the `DATABASE_URL` setting makes moving to Postgres a configuration change plus a migration tool such as Alembic.

@@ -6,7 +6,8 @@ Keep the browser zoom at 100% and close other tabs. Run the backend and frontend
 
 | Time | Do | Say |
 | --- | --- | --- |
-| 0:00 | Show the list | "This is LeadFlow, a single-screen lead tracker built with Next.js and FastAPI. Today's follow-ups are pinned at the top, overdue ones are red, and closed deals are dimmed." |
+| 0:00 | Show the login screen, type a wrong password, then the demo account (`demo@leadflow.test` / `leadflow123`) | "LeadFlow is protected by login. A wrong password gets a clear error, and the API returns 401 without a token." |
+| 0:10 | Show the list | "This is LeadFlow, a single-screen lead tracker built with Next.js and FastAPI. Today's follow-ups are pinned at the top, overdue ones are red, and closed deals are dimmed." |
 | 0:12 | Point at a row | "Each row shows the status, the last note and how long ago it was." |
 | 0:20 | Click the **Contacted** filter, then **All** | "Status filters work for all six stages." |
 | 0:28 | Type part of a name in the search box, then clear it | "Search by name composes with the filters." |
@@ -20,6 +21,6 @@ Keep the browser zoom at 100% and close other tabs. Run the backend and frontend
 | 1:44 | Click **+ Add New Lead**, fill Full Name only, **Save Lead** | "Only the name is required, and the status defaults to New." |
 | 1:54 | Press F5 | "Everything persists after a reload." |
 
-Optional last 10 seconds: show `http://localhost:8000/docs` and say "The API is documented, and there are 32 API tests and 57 frontend tests running in CI."
+Optional last 10 seconds: show `http://localhost:8000/docs` and say "The API is documented, and there are 52 API tests and 65 frontend tests running in CI."
 
 Tip: if a take goes wrong, run `python -m app.seed --reset` in `backend/` and refresh to start from clean data.
