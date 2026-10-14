@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -13,6 +15,9 @@ from ..schemas import (
     LeadOut,
     LeadUpdate,
 )
+
+# Ids beyond SQLite's INTEGER range would otherwise surface as a 500.
+LeadId = Annotated[int, Path(ge=1, le=2**63 - 1)]
 
 router = APIRouter(prefix="/leads", tags=["leads"], dependencies=[Depends(get_current_user)])
 
@@ -82,13 +87,13 @@ def create_lead(payload: LeadCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{lead_id}", response_model=LeadOut)
-def get_lead(lead_id: int, db: Session = Depends(get_db)):
+def get_lead(lead_id: LeadId, db: Session = Depends(get_db)):
     lead = _get_lead_or_404(db, lead_id)
     return _lead_out(lead, _latest_discussion(db, lead_id))
 
 
 @router.patch("/{lead_id}", response_model=LeadOut)
-def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db)):
+def update_lead(lead_id: LeadId, payload: LeadUpdate, db: Session = Depends(get_db)):
     lead = _get_lead_or_404(db, lead_id)
     changes = payload.model_dump(exclude_unset=True)
     if "name" in changes and changes["name"] is None:
@@ -103,7 +108,7 @@ def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db)
 
 
 @router.delete("/{lead_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_lead(lead_id: int, db: Session = Depends(get_db)):
+def delete_lead(lead_id: LeadId, db: Session = Depends(get_db)):
     lead = _get_lead_or_404(db, lead_id)
     db.delete(lead)
     db.commit()
@@ -111,7 +116,7 @@ def delete_lead(lead_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{lead_id}/discussions", response_model=list[DiscussionOut])
-def list_discussions(lead_id: int, db: Session = Depends(get_db)):
+def list_discussions(lead_id: LeadId, db: Session = Depends(get_db)):
     _get_lead_or_404(db, lead_id)
     return db.scalars(
         select(Discussion)
@@ -123,7 +128,7 @@ def list_discussions(lead_id: int, db: Session = Depends(get_db)):
 @router.post(
     "/{lead_id}/discussions", response_model=DiscussionAdded, status_code=status.HTTP_201_CREATED
 )
-def add_discussion(lead_id: int, payload: DiscussionCreate, db: Session = Depends(get_db)):
+def add_discussion(lead_id: LeadId, payload: DiscussionCreate, db: Session = Depends(get_db)):
     lead = _get_lead_or_404(db, lead_id)
     discussion = Discussion(lead_id=lead_id, note=payload.note, follow_up_at=payload.follow_up_at)
     db.add(discussion)
