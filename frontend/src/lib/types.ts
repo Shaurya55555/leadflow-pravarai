@@ -29,6 +29,11 @@ export interface Discussion {
   created_at: string;
 }
 
+export interface AuthUser {
+  id: number;
+  email: string;
+}
+
 export interface NewLeadInput {
   name: string;
   company?: string;

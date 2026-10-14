@@ -1,5 +1,5 @@
-import { LeadFlowApp } from "@/components/LeadFlowApp";
+import { AuthGate } from "@/components/AuthGate";
 
 export default function Home() {
-  return <LeadFlowApp />;
+  return <AuthGate />;
 }

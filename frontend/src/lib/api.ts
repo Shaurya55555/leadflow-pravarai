@@ -1,4 +1,5 @@
-import type { Discussion, Lead, LeadStatus, NewLeadInput } from "./types";
+import { UNAUTHORIZED_EVENT, clearToken, getToken } from "./auth";
+import type { AuthUser, Discussion, Lead, LeadStatus, NewLeadInput } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -27,10 +28,15 @@ function describe(detail: unknown): string | null {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
+  const token = getToken();
   try {
     res = await fetch(`${BASE}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...init?.headers },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init?.headers,
+      },
     });
   } catch {
     throw new ApiError("Cannot reach the server. Is the API running?", 0);
@@ -42,12 +48,26 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       // non-JSON error body; keep the generic message
     }
+    // A 401 on a call made with a token means the session is gone; a failed login has no token.
+    if (res.status === 401 && token) {
+      clearToken();
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+    }
     throw new ApiError(message, res.status);
   }
   return res.status === 204 ? (undefined as T) : res.json();
 }
 
 export const api = {
+  login(email: string, password: string) {
+    return request<{ access_token: string; user: AuthUser }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  },
+  me() {
+    return request<AuthUser>("/auth/me");
+  },
   listLeads(params: { status?: LeadStatus | null; q?: string }) {
     const qs = new URLSearchParams();
     if (params.status) qs.set("status", params.status);

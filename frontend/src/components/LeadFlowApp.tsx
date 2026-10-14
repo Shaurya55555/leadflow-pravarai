@@ -4,12 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { pinTodaysFollowUps } from "@/lib/time";
 import { useNow } from "@/lib/useNow";
-import { STATUSES, type Lead, type LeadStatus } from "@/lib/types";
+import { STATUSES, type AuthUser, type Lead, type LeadStatus } from "@/lib/types";
 import { AddLeadDialog } from "./AddLeadDialog";
 import { LeadRow } from "./LeadRow";
 import { LeadTimelineDialog } from "./LeadTimelineDialog";
 
-export function LeadFlowApp() {
+interface Props {
+  user?: AuthUser;
+  onLogout?: () => void;
+}
+
+export function LeadFlowApp({ user, onLogout }: Props = {}) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,13 +91,32 @@ export function LeadFlowApp() {
             </svg>
             LeadFlow
           </h1>
-          <button
-            type="button"
-            onClick={() => setAdding(true)}
-            className="shrink-0 rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            + Add New Lead
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            {user && (
+              <span
+                className="hidden max-w-[10rem] truncate text-xs text-slate-500 sm:inline"
+                title={user.email}
+              >
+                {user.email}
+              </span>
+            )}
+            {onLogout && (
+              <button
+                type="button"
+                onClick={onLogout}
+                className="rounded-md px-2.5 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+              >
+                Log out
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setAdding(true)}
+              className="rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              + Add New Lead
+            </button>
+          </div>
         </div>
       </header>
 
