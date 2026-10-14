@@ -15,6 +15,20 @@ Built for the PravarAI full-stack intern assessment.
 | --- | --- | --- |
 | ![Lead list](docs/screenshots/01-lead-list.jpg) | ![Lead timeline](docs/screenshots/02-lead-timeline.jpg) | ![Add lead](docs/screenshots/03-add-lead.jpg) |
 
+Every status view (filters applied):
+
+| New | Contacted | Qualified |
+| --- | --- | --- |
+| ![New](docs/screenshots/05-filter-new.jpg) | ![Contacted](docs/screenshots/06-filter-contacted.jpg) | ![Qualified](docs/screenshots/07-filter-qualified.jpg) |
+
+| Proposal Sent | Won | Lost |
+| --- | --- | --- |
+| ![Proposal Sent](docs/screenshots/08-filter-proposal-sent.jpg) | ![Won](docs/screenshots/09-filter-won.jpg) | ![Lost](docs/screenshots/10-filter-lost.jpg) |
+
+Login screen: [`docs/screenshots/04-login.jpg`](docs/screenshots/04-login.jpg)
+
+**Demo video:** https://drive.google.com/file/d/1sGr0Vudb6sKC4pSj6iAbZdKQtwGhCbm-/view?usp=sharing
+
 ## Features
 
 **Required**
