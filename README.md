@@ -71,7 +71,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Both services work with their defaults; copy `.env.example` files only if you need different ports or hosts.
+Open http://localhost:3000 and sign in with the demo account `demo@leadflow.test` / `leadflow123` (created automatically on first start). Both services work with their defaults; copy `.env.example` files only if you need different ports or hosts.
 
 ### Docker Compose
 
