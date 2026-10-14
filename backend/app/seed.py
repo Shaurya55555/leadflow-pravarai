@@ -3,6 +3,7 @@ import sys
 from datetime import timedelta
 
 from .database import Base, SessionLocal, engine
+from .security import ensure_demo_user
 from .models import Discussion, Lead, LeadStatus, utcnow
 
 # (name, company, phone, status, follow-up offset from now, [(days_ago, note), ...])
@@ -36,6 +37,7 @@ def run(reset: bool = False) -> None:
     if reset:
         Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    ensure_demo_user()
     now = utcnow()
     with SessionLocal() as db:
         if db.query(Lead).count():

@@ -3,6 +3,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..security import get_current_user
 from ..models import Discussion, Lead, LeadStatus
 from ..schemas import (
     DiscussionAdded,
@@ -13,7 +14,7 @@ from ..schemas import (
     LeadUpdate,
 )
 
-router = APIRouter(prefix="/leads", tags=["leads"])
+router = APIRouter(prefix="/leads", tags=["leads"], dependencies=[Depends(get_current_user)])
 
 
 def _latest_discussion(db: Session, lead_id: int) -> Discussion | None:
