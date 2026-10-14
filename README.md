@@ -84,11 +84,11 @@ Frontend on http://localhost:3000, API on http://localhost:8000. The backend see
 ## Tests
 
 ```bash
-cd backend && pytest -q          # 52 API tests
-cd frontend && npm test          # 65 UI and logic tests
+cd backend && pytest -q          # 108 API tests
+cd frontend && npm test          # 86 UI and logic tests
 ```
 
-What is covered:
+The full edge-case matrix, with the test that proves each row and the bugs the tests found, is in [`docs/TESTING.md`](docs/TESTING.md). In short:
 
 - **API:** status codes and error shapes, validation limits, partial updates, search wildcards, combined filters, ordering with identical timestamps, CORS, seed idempotency.
 - **Time logic:** today and overdue across local midnight and the UTC/local date boundary (the suite pins the timezone to Asia/Kolkata), closed leads never flagged, pin ordering.

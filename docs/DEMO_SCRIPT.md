@@ -21,6 +21,6 @@ Keep the browser zoom at 100% and close other tabs. Run the backend and frontend
 | 1:44 | Click **+ Add New Lead**, fill Full Name only, **Save Lead** | "Only the name is required, and the status defaults to New." |
 | 1:54 | Press F5 | "Everything persists after a reload." |
 
-Optional last 10 seconds: show `http://localhost:8000/docs` and say "The API is documented, and there are 52 API tests and 65 frontend tests running in CI."
+Optional last 10 seconds: show `http://localhost:8000/docs` and say "The API is documented, and there are 108 API tests and 86 frontend tests running in CI."
 
 Tip: if a take goes wrong, run `python -m app.seed --reset` in `backend/` and refresh to start from clean data.
